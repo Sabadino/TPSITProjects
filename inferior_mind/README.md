@@ -1,16 +1,5 @@
-# inferior_mind
+Progetto Inferior Mind.
+Inferior Mind è un gioco basato su Master Mind ma semplificato, si ha a disposizione 4 bottoni che quando premuti si ha l'opportunità di creare una sequenza di colori,nel mio caso rosso giallo azzurro, e bisogna cercare di indovinare la sequenza randomica.
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Ho usato come base lo strucca botton, ho creato le liste di colori disponibili e la lista che deve contenere la sequenza segreta da indovinare, ho settato i bottoni com colore iniziale grigio,ho generato la sequenza segreta tramite il metodo _generateSequence, change color fa in modo che ogni volta che premo il bottone il colore cambia,checkWin controlla ogni volta che quando io prema il floating action button se la sequenza sia corretta e che ne generi subito un altra, e fa in modo anche che se un bottone rimane grigio ti dice di riempirli tutti, e ogni volta che viene premuto il bottone, i bottoni tornano grigi.
+Poi il build finale, mi crea i bottoni, li setta a background color grey e on pressed esegue il metodo change color e il floating action button on pressed fa check win.
