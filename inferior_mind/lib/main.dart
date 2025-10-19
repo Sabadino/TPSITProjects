@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -30,11 +31,62 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<Color> _colorSequence = [];
 
-  void _incrementCounter() {
+  String _message = "Guess the color sequence";
+
+  List<Color> _selectedColors = List.generate(4, (index) => Colors.grey);
+
+  List<int> _colorIndices = List.generate(4, (index) => 0);
+
+  final List<Color> _availableColors = [Colors.blue, Colors.red, Colors.yellow];
+
+  @override
+  void initState() {
+    super.initState();
+    _generateSequence();
+  }
+
+  void _generateSequence() {
+    final r = Random();
+
+    _colorSequence = [];
+
+    for (int i = 0; i < 4; i++) {
+      int randomIndex = r.nextInt(_availableColors.length);
+      Color randomColor = _availableColors[randomIndex];
+      _colorSequence.add(randomColor);
+    }
+  }
+
+  void _changeColor(int index) {
     setState(() {
-      _counter++;
+      // serve per ricostruire il widget (aggiornare l'interfaccia,è un metodo di stateful widget)
+      _colorIndices[index]++;
+      if (_colorIndices[index] >= _availableColors.length) {
+        _colorIndices[index] = 0;
+        _selectedColors[index] = _availableColors[0];
+      } else {
+        _selectedColors[index] = _availableColors[_colorIndices[index]];
+      }
+    });
+  }
+
+  void _checkWin() {
+    setState(() {
+      if (_selectedColors.contains(Colors.grey)) {
+        _message = "You must fill all the colors!";
+        return;
+      } else if (_selectedColors.toString() == _colorSequence.toString()) {
+        _message = "You win! 🎯";
+        _generateSequence();
+      } else {
+        _message = "Try again!";
+      }
+
+      _selectedColors = List.generate(4, (index) => Colors.grey);
+
+      _colorIndices = List.generate(4, (index) => 0);
     });
   }
 
@@ -50,16 +102,28 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('Ti ga strucca el boton tante volte:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(_message, style: Theme.of(context).textTheme.headlineSmall),
+
+            const SizedBox(height: 20),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(4, (index) {
+                return ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _selectedColors[index],
+                  ),
+                  onPressed: () => _changeColor(index),
+                  child: null,
+                );
+              }),
+            ), //Text(_colorSequence.toString())
           ],
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _checkWin,
         tooltip: 'Check',
         child: const Icon(Icons.question_mark),
       ),
