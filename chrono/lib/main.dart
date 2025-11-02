@@ -14,7 +14,6 @@ class ChronoApp extends StatelessWidget {
       title: 'Chrono',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const ChronoScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -27,27 +26,27 @@ class ChronoScreen extends StatefulWidget {
 }
 
 class _ChronoScreenState extends State<ChronoScreen> {
-  int _decimi = 0;
+  int _tenths = 0;
   bool _isPaused = false;
   String _buttonState = 'START';
 
   Timer? _timer;
   StreamController<int>? _tickStream;
-  StreamController<int>? _secStream;
+  StreamController<int>? _secondsStream;
 
   @override
   void initState() {
     super.initState();
 
     _tickStream = StreamController<int>();
-    _secStream = StreamController<int>();
+    _secondsStream = StreamController<int>();
 
-    // 10 tick = 1 secondo
+    // 10 tick = 1 second
     int count = 0;
     _tickStream!.stream.listen((tick) {
       count++;
       if (count == 10) {
-        _secStream!.add(_decimi ~/ 10);
+        _secondsStream!.add(_tenths ~/ 10);
         count = 0;
       }
     });
@@ -59,7 +58,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
 
       _tickStream?.add(1);
       setState(() {
-        _decimi++;
+        _tenths++;
       });
     });
   }
@@ -68,7 +67,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
     setState(() {
       if (_buttonState == 'START') {
         _buttonState = 'STOP';
-        _decimi = 0;
+        _tenths = 0;
         _isPaused = false;
         startTimer();
       } else if (_buttonState == 'STOP') {
@@ -76,7 +75,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
         _timer?.cancel();
       } else {
         _buttonState = 'START';
-        _decimi = 0;
+        _tenths = 0;
       }
     });
   }
@@ -90,11 +89,11 @@ class _ChronoScreenState extends State<ChronoScreen> {
   }
 
   String getTimeText() {
-    int totalSec = _decimi ~/ 10;
-    int min = totalSec ~/ 60;
-    int sec = totalSec % 60;
-    int dec = _decimi % 10;
-    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.${dec}';
+    int totalSeconds = _tenths ~/ 10;
+    int minutes = totalSeconds ~/ 60;
+    int seconds = totalSeconds % 60;
+    int tenths = _tenths % 10;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${tenths}';
   }
 
   @override
@@ -104,6 +103,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
       appBar: AppBar(
         title: const Text('Chrono'),
         centerTitle: true,
+        backgroundColor: Colors.blue,
       ),
       body: Center(
         child: Column(
@@ -170,7 +170,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
   void dispose() {
     _timer?.cancel();
     _tickStream?.close();
-    _secStream?.close();
+    _secondsStream?.close();
     super.dispose();
   }
 }
