@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() {
   runApp(const ChronoApp());
@@ -36,6 +37,29 @@ class _ChronoScreenState extends State<ChronoScreen> {
     return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
   }
 
+  void startCounting() {
+    Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!running || paused) {
+        timer.cancel();
+        return;
+      }
+      totalSeconds++;
+      setState(() {});
+    });
+  }
+
+  void onMainButtonPress() {
+    setState(() {
+      if (!running) {
+        running = true;
+        totalSeconds = 0;
+        startCounting();
+      } else {
+        running = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +88,11 @@ class _ChronoScreenState extends State<ChronoScreen> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: onMainButtonPress,
+        backgroundColor: running ? Colors.red : Colors.green,
+        child: Icon(running ? Icons.stop : Icons.play_arrow),
       ),
     );
   }
