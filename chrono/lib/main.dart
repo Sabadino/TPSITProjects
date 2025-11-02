@@ -11,7 +11,7 @@ class ChronoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Chrono',
-      theme: ThemeData(primarySwitch: Colors.blue),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const ChronoScreen(),
       debugShowCheckedModeBanner: false,
     );
