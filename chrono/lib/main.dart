@@ -30,6 +30,27 @@ class _ChronoScreenState extends State<ChronoScreen> {
   int totalSeconds = 0;
   bool running = false;
   bool paused = false;
+  
+  StreamController<int>? tickStream;
+  StreamController<int>? secStream;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    tickStream = StreamController<int>();
+    secStream = StreamController<int>();
+    
+    // Pipe: 10 tick = 1 secondo
+    int count = 0;
+    tickStream!.stream.listen((tick) {
+      count++;
+      if (count == 10) {
+        secStream!.add(totalSeconds);
+        count = 0;
+      }
+    });
+  }
 
   String getTimeText() {
     int min = totalSeconds ~/ 60;
@@ -43,6 +64,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
         timer.cancel();
         return;
       }
+      tickStream?.add(1);
       totalSeconds++;
       setState(() {});
     });
@@ -95,5 +117,12 @@ class _ChronoScreenState extends State<ChronoScreen> {
         child: Icon(running ? Icons.stop : Icons.play_arrow),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    tickStream?.close();
+    secStream?.close();
+    super.dispose();
   }
 }
