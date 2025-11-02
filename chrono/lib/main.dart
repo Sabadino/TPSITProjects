@@ -30,7 +30,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
   int _decimi = 0;
   bool _isPaused = false;
   String _buttonState = 'START';
-  
+
   Timer? _timer;
   StreamController<int>? _tickStream;
   StreamController<int>? _secStream;
@@ -38,10 +38,10 @@ class _ChronoScreenState extends State<ChronoScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     _tickStream = StreamController<int>();
     _secStream = StreamController<int>();
-    
+
     // 10 tick = 1 secondo
     int count = 0;
     _tickStream!.stream.listen((tick) {
@@ -56,7 +56,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
   void startTimer() {
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_isPaused) return;
-      
+
       _tickStream?.add(1);
       setState(() {
         _decimi++;
@@ -83,7 +83,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
 
   void onPausePress() {
     if (_buttonState != 'STOP') return;
-    
+
     setState(() {
       _isPaused = !_isPaused;
     });
@@ -148,16 +148,16 @@ class _ChronoScreenState extends State<ChronoScreen> {
           FloatingActionButton(
             heroTag: 'main',
             onPressed: onMainButtonPress,
-            backgroundColor: _buttonState == 'START' 
-                ? Colors.green 
-                : _buttonState == 'STOP' 
-                    ? Colors.red 
+            backgroundColor: _buttonState == 'START'
+                ? Colors.green
+                : _buttonState == 'STOP'
+                    ? Colors.red
                     : Colors.blue,
             child: Icon(
-              _buttonState == 'START' 
-                  ? Icons.play_arrow 
-                  : _buttonState == 'STOP' 
-                      ? Icons.stop 
+              _buttonState == 'START'
+                  ? Icons.play_arrow
+                  : _buttonState == 'STOP'
+                      ? Icons.stop
                       : Icons.refresh,
             ),
           ),
