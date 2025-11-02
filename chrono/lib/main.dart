@@ -1,78 +1,41 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ChronoApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ChronoApp extends StatelessWidget {
+  const ChronoApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Chrono',
+      theme: ThemeData(primarySwitch: Colors.blue),
+      home: const ChronoScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-
-  final String title;
+class ChronoScreen extends StatefulWidget {
+  const ChronoScreen({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ChronoScreen> createState() => _ChronoScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-
-    });
-  }
-
+class _ChronoScreenState extends State<ChronoScreen> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-      
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        
-        title: Text(widget.title),
+        title: const Text('Chrono'),
+        centerTitle: true,
       ),
       body: Center(
-        
-        child: Column(
-          
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        child: Text('00:00', style: TextStyle(fontSize: 60)),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
