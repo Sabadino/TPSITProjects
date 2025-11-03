@@ -14,6 +14,7 @@ class ChronoApp extends StatelessWidget {
       title: 'Chrono',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const ChronoScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -26,74 +27,74 @@ class ChronoScreen extends StatefulWidget {
 }
 
 class _ChronoScreenState extends State<ChronoScreen> {
-  int _tenths = 0;
-  bool _isPaused = false;
-  String _buttonState = 'START';
-
-  Timer? _timer;
-  StreamController<int>? _tickStream;
-  StreamController<int>? _secondsStream;
+  int totalSeconds = 0;
+  bool paused = false;
+  String buttonState = 'START';
+  
+  StreamSubscription<int>? tickSubscription;
+  StreamController<int>? secStream;
 
   @override
   void initState() {
     super.initState();
-
-    _tickStream = StreamController<int>();
-    _secondsStream = StreamController<int>();
-
-    // 10 tick = 1 second
-    int count = 0;
-    _tickStream!.stream.listen((tick) {
-      count++;
-      if (count == 10) {
-        _secondsStream!.add(_tenths ~/ 10);
-        count = 0;
-      }
-    });
+    secStream = StreamController<int>();
   }
 
-  void startTimer() {
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (_isPaused) return;
-
-      _tickStream?.add(1);
+  void startCounting() {
+    // Stream.periodic genera tick ogni 100ms
+    Stream<int> tickStream = Stream.periodic(
+      const Duration(milliseconds: 100),
+      (count) => count,
+    );
+    
+    // Pipe: 10 tick = 1 secondo
+    int tickCount = 0;
+    tickSubscription = tickStream.listen((tick) {
+      if (paused) return;
+      
+      tickCount++;
+      if (tickCount == 10) {
+        secStream?.add(totalSeconds);
+        tickCount = 0;
+      }
+      
       setState(() {
-        _tenths++;
+        totalSeconds++;
       });
     });
   }
 
   void onMainButtonPress() {
     setState(() {
-      if (_buttonState == 'START') {
-        _buttonState = 'STOP';
-        _tenths = 0;
-        _isPaused = false;
-        startTimer();
-      } else if (_buttonState == 'STOP') {
-        _buttonState = 'RESET';
-        _timer?.cancel();
+      if (buttonState == 'START') {
+        buttonState = 'STOP';
+        totalSeconds = 0;
+        paused = false;
+        startCounting();
+      } else if (buttonState == 'STOP') {
+        buttonState = 'RESET';
+        tickSubscription?.cancel();
       } else {
-        _buttonState = 'START';
-        _tenths = 0;
+        buttonState = 'START';
+        totalSeconds = 0;
+        paused = false;
       }
     });
   }
 
-  void onPausePress() {
-    if (_buttonState != 'STOP') return;
-
+  void onPauseButtonPress() {
+    if (buttonState != 'STOP') return;
+    
     setState(() {
-      _isPaused = !_isPaused;
+      paused = !paused;
     });
   }
 
   String getTimeText() {
-    int totalSeconds = _tenths ~/ 10;
-    int minutes = totalSeconds ~/ 60;
-    int seconds = totalSeconds % 60;
-    int tenths = _tenths % 10;
-    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${tenths}';
+    int min = totalSeconds ~/ 600;
+    int sec = (totalSeconds ~/ 10) % 60;
+    int tenth = totalSeconds % 10;
+    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.${tenth}';
   }
 
   @override
@@ -103,7 +104,6 @@ class _ChronoScreenState extends State<ChronoScreen> {
       appBar: AppBar(
         title: const Text('Chrono'),
         centerTitle: true,
-        backgroundColor: Colors.blue,
       ),
       body: Center(
         child: Column(
@@ -114,6 +114,13 @@ class _ChronoScreenState extends State<ChronoScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Text(
                 getTimeText(),
@@ -126,7 +133,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              _isPaused ? 'PAUSED' : _buttonState,
+              paused ? 'PAUSED' : (buttonState == 'STOP' ? 'RUNNING' : buttonState),
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.grey[700],
@@ -139,27 +146,17 @@ class _ChronoScreenState extends State<ChronoScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            heroTag: 'pause',
-            onPressed: onPausePress,
+            heroTag: 'btn1',
+            onPressed: onPauseButtonPress,
             backgroundColor: Colors.orange,
-            child: Icon(_isPaused ? Icons.play_arrow : Icons.pause),
+            child: Icon(paused ? Icons.play_arrow : Icons.pause),
           ),
           const SizedBox(width: 15),
           FloatingActionButton(
-            heroTag: 'main',
+            heroTag: 'btn2',
             onPressed: onMainButtonPress,
-            backgroundColor: _buttonState == 'START'
-                ? Colors.green
-                : _buttonState == 'STOP'
-                    ? Colors.red
-                    : Colors.blue,
-            child: Icon(
-              _buttonState == 'START'
-                  ? Icons.play_arrow
-                  : _buttonState == 'STOP'
-                      ? Icons.stop
-                      : Icons.refresh,
-            ),
+            backgroundColor: buttonState == 'START' ? Colors.green : (buttonState == 'STOP' ? Colors.red : Colors.blue),
+            child: Icon(buttonState == 'START' ? Icons.play_arrow : (buttonState == 'STOP' ? Icons.stop : Icons.refresh)),
           ),
         ],
       ),
@@ -168,9 +165,8 @@ class _ChronoScreenState extends State<ChronoScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _tickStream?.close();
-    _secondsStream?.close();
-    super.dispose();
+    tickSubscription?.cancel();
+    secStream?.close();
+    super.dispose();  
   }
 }
