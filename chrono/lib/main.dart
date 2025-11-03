@@ -6,7 +6,7 @@ void main() {
 }
 
 class ChronoApp extends StatelessWidget {
-  const ChronoApp({Key? key}) : super(key: key);
+  const ChronoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class ChronoApp extends StatelessWidget {
 }
 
 class ChronoScreen extends StatefulWidget {
-  const ChronoScreen({Key? key}) : super(key: key);
+  const ChronoScreen({super.key});
 
   @override
   State<ChronoScreen> createState() => _ChronoScreenState();
@@ -94,7 +94,7 @@ class _ChronoScreenState extends State<ChronoScreen> {
     int min = totalSeconds ~/ 600;
     int sec = (totalSeconds ~/ 10) % 60;
     int tenth = totalSeconds % 10;
-    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.${tenth}';
+    return '${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}.$tenth';
   }
 
   @override
