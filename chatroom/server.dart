@@ -1,44 +1,98 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 import 'dart:async';
 
 void main() async {
-  print("Ho iniziato");
-  
-  try {
-    final socket = await Socket.connect("localhost", 3000);
-    print('Connesso a ${socket.remoteAddress.address}:${socket.remotePort}\n');
+  print('Avvio server sulla porta 3000...');
 
-    socket.listen(
-      (data) {
-        String message = utf8.decode(data).trim();
-        print(message);
-      },
-      onDone: () {
-        print('\nServer disconnesso');
-        exit(0);
-      },
-      onError: (error) {
-        print('Errore ricezione: $error');
-        exit(1);
-      }
-    );
+  try {
+    final server = await ServerSocket.bind(InternetAddress.anyIPv4, 3000);
+    var connection = HandleConnection(server);
+    connection.startServer();
+  } catch (e) {
+    print('Server error: $e');
+  }
+}
+
+class HandleConnection {
+  
+  late ServerSocket server;
+  Map<String, String> logs = {};
+  Map<String, Socket> clients = {};
+
+  HandleConnection(this.server);
+
+  void startServer() async {
+    print('Server in ascolto su ${server.address.address}:${server.port}\n');
     
-    print('Scrivi messaggi (digita "exit1" per uscire):');
-    await for (var line in stdin.transform(utf8.decoder).transform(LineSplitter())) {
-      if (line.toLowerCase() == 'exit1') {
-        await socket.close();
-        exit(0);
+    await for (var client in server) {
+      _handleClient(client);
+    }
+  }
+
+  void _handleClient(Socket client) async {
+    final address = '${client.remoteAddress.address}:${client.remotePort}';
+    print('Nuova connessione da $address');
+
+    clients[address] = client;
+    
+    try {
+      client.write("Inserire Nome: \n");
+      await client.flush();
+      bool fMessage = true;
+
+      await for (var data in client) {
+        String message = utf8.decode(data).trim();
+
+        if (message.isEmpty) continue;
+
+        if(fMessage){
+          logs[message] = address;
+          print('[$address] si è registrato come: $message');
+          client.write("Benvenuto $message! Puoi iniziare a chattare.\n");
+          await client.flush();
+          fMessage = false;
+        }else{
+          print('[$address]: $message');
+          _broadcast(client, message);
+        }
+
+        await client.flush();
+      }
+    } catch (e) {
+      print('Errore con $address: $e');
+    } finally {
+      clients.remove(address);
+      String? userName;
+      logs.forEach((name, ip) {
+        if (ip == address) userName = name;
+      });
+      if (userName != null) {
+        logs.remove(userName);
+        print('$userName disconnesso\n');
+      } else {
+        print('$address disconnesso\n');
       }
       
-      if (line.isNotEmpty) {
-        socket.write('$line\n');
-        await socket.flush();
-      }
+      await client.close();
     }
+    }
+
+  void _broadcast(Socket sender, String m){
+    String? senderName;
+    String senderAddress = '${sender.remoteAddress.address}:${sender.remotePort}';
     
-  } catch (e) {
-    print('Errore: $e');
-    exit(1);
+    logs.forEach((name, ip) {
+      if (ip == senderAddress) {
+        senderName = name;
+      }
+    });
+
+    clients.forEach((address, client) {
+      if (client != sender) {
+        client.write("${senderName ?? 'Anonimo'}: $m\n");
+      }
+    });  
+
   }
 }
