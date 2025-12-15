@@ -6,7 +6,7 @@ void main() async {
   print("Ho iniziato");
 
   try {
-    final socket = await Socket.connect("localhost", 3000);
+    final socket = await Socket.connect("192.168.4.40", 3000);
     print('Connesso a ${socket.remoteAddress.address}:${socket.remotePort}\n');
 
     socket.listen(

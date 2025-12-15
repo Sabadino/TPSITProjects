@@ -36,7 +36,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _connectToServer() async {
     try {
       _socket = await Socket.connect("localhost", 3000);
-      print('Connesso a ${_socket!.remoteAddress.address}:${_socket!.remotePort}');
+      print(
+          'Connesso a ${_socket!.remoteAddress.address}:${_socket!.remotePort}');
 
       _socket!.listen(
         (data) {
@@ -118,7 +119,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _inputController,
                     decoration: InputDecoration(
-                      hintText: _usernameSet ? 'Scrivi un messaggio' : 'Inserisci nome utente',
+                      hintText: _usernameSet
+                          ? 'Scrivi un messaggio'
+                          : 'Inserisci nome utente',
                       border: OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _sendMessage(),
