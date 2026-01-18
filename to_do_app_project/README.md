@@ -1,16 +1,24 @@
-# to_do_app_project
+To-Do List
 
-A new Flutter project.
+Sviluppatore: Hammoud Hadi
+Classe: 5IE
 
-## Getting Started
+Descrizione
+Applicazione To-Do List sviluppata in Dart e Flutter che permette all’utente di gestire una lista di attività personali. L’app consente di aggiungere nuovi promemoria e visualizzarli in tempo reale tramite un’interfaccia semplice e intuitiva.
 
-This project is a starting point for a Flutter application.
+Componenti
+	•	Main App: inizializza l’applicazione Flutter e definisce il tema grafico
+	•	Model: rappresenta il singolo elemento Todo
+	•	Notifier (ChangeNotifier + Provider): gestisce lo stato della lista e notifica automaticamente le modifiche all’interfaccia
+	•	Widgets: componenti grafici per la visualizzazione dei Todo nella lista
 
-A few resources to get you started if this is your first Flutter project:
+Funzionamento
+All’avvio dell’app viene mostrata la lista delle attività.
+Premendo il Floating Action Button (+) si apre una finestra di dialogo che permette di inserire il testo del nuovo Todo.
+Una volta confermato, l’elemento viene aggiunto alla lista e visualizzato immediatamente.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Scelte di Sviluppo
+	•	Utilizzo di Provider per una gestione dello stato semplice ed efficiente
+	•	ListView.builder per una visualizzazione dinamica e performante della lista
+	•	AlertDialog per l’inserimento dei nuovi elementi
+	•	Struttura modulare del codice per facilitare manutenzione e leggibilità
