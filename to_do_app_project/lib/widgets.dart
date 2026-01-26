@@ -28,7 +28,7 @@ class TodoItem extends StatelessWidget {
             children: [
               Checkbox(
                 value: todo.checked,
-                onChanged: (_) {
+                onChanged: (value) {
                   notifier.changeTodo(todo);
                 },
               ),
