@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'helper.dart';
+import 'package:provider/provider.dart';
 import 'model.dart';
+import 'notifier.dart';
 import 'widgets.dart';
 
 void main() {
@@ -15,9 +16,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'zkeep',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
+        colorSchemeSeed: Colors.amber,
+        useMaterial3: true,
+        brightness: Brightness.dark,
       ),
-      home: const MyHomePage(title: 'zkeep'),
+      home: ChangeNotifierProvider<NoteNotifier>(
+        create: (context) => NoteNotifier(),
+        child: const MyHomePage(title: 'zkeep'),
+      ),
     );
   }
 }
@@ -32,52 +38,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textFieldController = TextEditingController();
-  final List<Note> _notes = <Note>[];
 
-  @override
-  initState() {
-    super.initState();
-    _init();
-  }
-
-  Future<void> _init() async {
-    await DatabaseHelper.init();
-    _updateNotes();
-  }
-
-  void _updateNotes() {
-    DatabaseHelper.getNotes().then((notes) {
-      setState(() {
-        _notes.clear();
-        _notes.addAll(notes);
-      });
-    });
-  }
-
-  void _handleNoteDelete(Note note) {
-    setState(() {
-      _notes.remove(note);
-    });
-    DatabaseHelper.deleteNote(note);
-  }
-
-  Future<void> _displayDialog() async {
+  Future<void> _displayDialog(NoteNotifier notifier) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('add note'),
+          title: const Text('aggiungi nota'),
           content: TextField(
             controller: _textFieldController,
-            decoration: const InputDecoration(hintText: 'type here ...'),
+            decoration: const InputDecoration(hintText: 'scrivi qui ...'),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Add'),
+              child: const Text('aggiungi'),
               onPressed: () {
                 Navigator.of(context).pop();
-                _addNote(_textFieldController.text);
+                notifier.addNote(_textFieldController.text);
+                _textFieldController.clear();
               },
             ),
           ],
@@ -86,47 +65,33 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _addNote(String title) {
-    Note note = Note(id: null, title: title);
-    setState(() {
-      _notes.insert(0, note);
-    });
-    DatabaseHelper.insertNote(note);
-    _textFieldController.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final NoteNotifier notifier = context.watch<NoteNotifier>();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
         shadowColor: Theme.of(context).shadowColor,
         elevation: 4,
+        title: Text(widget.title),
+        centerTitle: true,
       ),
       body: Center(
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          itemCount: _notes.length,
+          itemCount: notifier.length,
           itemBuilder: (context, index) {
-            return NoteItem(
-              note: _notes[index],
-              onNoteDelete: _handleNoteDelete,
-            );
+            Note note = notifier.getNote(index);
+            return NoteItem(note: note);
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _displayDialog(),
-        tooltip: 'Add Note',
+        onPressed: () => _displayDialog(notifier),
+        tooltip: 'aggiungi nota',
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _textFieldController.dispose();
-    super.dispose();
   }
 }
 
@@ -140,60 +105,25 @@ class TodoPage extends StatefulWidget {
 
 class _TodoPageState extends State<TodoPage> {
   final TextEditingController _textFieldController = TextEditingController();
-  final List<Todo> _todos = <Todo>[];
 
-  @override
-  initState() {
-    super.initState();
-    _updateTodos();
-  }
-
-  void _updateTodos() {
-    DatabaseHelper.getTodos(widget.note.id!).then((todos) {
-      setState(() {
-        _todos.clear();
-        _todos.addAll(todos);
-      });
-    });
-  }
-
-  void _handleTodoChange(Todo todo) {
-    todo.checked = !todo.checked;
-    setState(() {
-      _todos.remove(todo);
-      if (!todo.checked) {
-        _todos.add(todo);
-      } else {
-        _todos.insert(0, todo);
-      }
-    });
-    DatabaseHelper.updateTodo(todo);
-  }
-
-  void _handleTodoDelete(Todo todo) {
-    setState(() {
-      _todos.remove(todo);
-    });
-    DatabaseHelper.deleteTodo(todo);
-  }
-
-  Future<void> _displayDialog() async {
+  Future<void> _displayDialog(TodoNotifier notifier) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('add todo item'),
+          title: const Text('aggiungi todo'),
           content: TextField(
             controller: _textFieldController,
-            decoration: const InputDecoration(hintText: 'type here ...'),
+            decoration: const InputDecoration(hintText: 'scrivi qui ...'),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Add'),
+              child: const Text('aggiungi'),
               onPressed: () {
                 Navigator.of(context).pop();
-                _addTodoItem(_textFieldController.text);
+                notifier.addTodo(_textFieldController.text);
+                _textFieldController.clear();
               },
             ),
           ],
@@ -202,47 +132,32 @@ class _TodoPageState extends State<TodoPage> {
     );
   }
 
-  void _addTodoItem(String name) {
-    Todo todo = Todo(id: null, noteId: widget.note.id!, name: name, checked: false);
-    setState(() {
-      _todos.insert(0, todo);
-    });
-    DatabaseHelper.insertTodo(todo);
-    _textFieldController.clear();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final TodoNotifier notifier = context.watch<TodoNotifier>();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.note.title),
         shadowColor: Theme.of(context).shadowColor,
         elevation: 4,
+        title: Text(widget.note.title),
+        centerTitle: true,
       ),
       body: Center(
         child: ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          itemCount: _todos.length,
+          itemCount: notifier.length,
           itemBuilder: (context, index) {
-            return TodoItem(
-              todo: _todos[index],
-              onTodoChanged: _handleTodoChange,
-              onTodoDelete: _handleTodoDelete,
-            );
+            Todo todo = notifier.getTodo(index);
+            return TodoItem(todo: todo);
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _displayDialog(),
-        tooltip: 'Add Item',
+        onPressed: () => _displayDialog(notifier),
+        tooltip: 'aggiungi todo',
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _textFieldController.dispose();
-    super.dispose();
   }
 }
