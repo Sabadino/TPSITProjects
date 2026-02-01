@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:async';
 
 void main() async {
   print("Ho iniziato");

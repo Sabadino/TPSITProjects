@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'helper.dart';
+import 'model.dart';
+import 'widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,46 +10,20 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'zkeep',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'zkeep'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -54,69 +31,218 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final TextEditingController _textFieldController = TextEditingController();
+  final List<Note> _notes = <Note>[];
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  @override
+  initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    await DatabaseHelper.init();
+    _updateNotes();
+  }
+
+  void _updateNotes() {
+    DatabaseHelper.getNotes().then((notes) {
+      setState(() {
+        _notes.clear();
+        _notes.addAll(notes);
+      });
     });
+  }
+
+  void _handleNoteDelete(Note note) {
+    setState(() {
+      _notes.remove(note);
+    });
+    DatabaseHelper.deleteNote(note);
+  }
+
+  Future<void> _displayDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('add note'),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: const InputDecoration(hintText: 'type here ...'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _addNote(_textFieldController.text);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addNote(String title) {
+    Note note = Note(id: null, title: title);
+    setState(() {
+      _notes.insert(0, note);
+    });
+    DatabaseHelper.insertNote(note);
+    _textFieldController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        shadowColor: Theme.of(context).shadowColor,
+        elevation: 4,
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          itemCount: _notes.length,
+          itemBuilder: (context, index) {
+            return NoteItem(
+              note: _notes[index],
+              onNoteDelete: _handleNoteDelete,
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: () => _displayDialog(),
+        tooltip: 'Add Note',
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    super.dispose();
+  }
+}
+
+class TodoPage extends StatefulWidget {
+  const TodoPage({super.key, required this.note});
+  final Note note;
+
+  @override
+  State<TodoPage> createState() => _TodoPageState();
+}
+
+class _TodoPageState extends State<TodoPage> {
+  final TextEditingController _textFieldController = TextEditingController();
+  final List<Todo> _todos = <Todo>[];
+
+  @override
+  initState() {
+    super.initState();
+    _updateTodos();
+  }
+
+  void _updateTodos() {
+    DatabaseHelper.getTodos(widget.note.id!).then((todos) {
+      setState(() {
+        _todos.clear();
+        _todos.addAll(todos);
+      });
+    });
+  }
+
+  void _handleTodoChange(Todo todo) {
+    todo.checked = !todo.checked;
+    setState(() {
+      _todos.remove(todo);
+      if (!todo.checked) {
+        _todos.add(todo);
+      } else {
+        _todos.insert(0, todo);
+      }
+    });
+    DatabaseHelper.updateTodo(todo);
+  }
+
+  void _handleTodoDelete(Todo todo) {
+    setState(() {
+      _todos.remove(todo);
+    });
+    DatabaseHelper.deleteTodo(todo);
+  }
+
+  Future<void> _displayDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('add todo item'),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: const InputDecoration(hintText: 'type here ...'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _addTodoItem(_textFieldController.text);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addTodoItem(String name) {
+    Todo todo = Todo(id: null, noteId: widget.note.id!, name: name, checked: false);
+    setState(() {
+      _todos.insert(0, todo);
+    });
+    DatabaseHelper.insertTodo(todo);
+    _textFieldController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.note.title),
+        shadowColor: Theme.of(context).shadowColor,
+        elevation: 4,
+      ),
+      body: Center(
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          itemCount: _todos.length,
+          itemBuilder: (context, index) {
+            return TodoItem(
+              todo: _todos[index],
+              onTodoChanged: _handleTodoChange,
+              onTodoDelete: _handleTodoDelete,
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _displayDialog(),
+        tooltip: 'Add Item',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    super.dispose();
   }
 }
