@@ -4,14 +4,15 @@ import 'model.dart';
 
 class TodoListNotifier with ChangeNotifier {
   TodoListNotifier(List<TodoCard> initialCards) : _cards = initialCards;
+
   final List<TodoCard> _cards;
 
   int get length => _cards.length;
-  TodoCard getCard(int i) => _cards[i];
+  TodoCard getCard(int index) => _cards[index];
 
   Future<void> addCard() async {
-    final id = await Helper.insertCard();
-    _cards.add(TodoCard(id: id));
+    final cardId = await Helper.insertCard();
+    _cards.add(TodoCard(id: cardId));
     notifyListeners();
   }
 
@@ -25,7 +26,9 @@ class TodoListNotifier with ChangeNotifier {
     if (name.isEmpty) return;
     final todo = Todo(cardId: cardId, name: name);
     todo.id = await Helper.insertTodo(todo);
-    _cards.firstWhere((c) => c.id == cardId).todos.add(todo);
+
+    final card = _cards.firstWhere((c) => c.id == cardId);
+    card.todos.add(todo);
     notifyListeners();
   }
 
@@ -43,8 +46,12 @@ class TodoListNotifier with ChangeNotifier {
   }
 
   Future<void> deleteTodo(Todo todo, int cardId) async {
-    _cards.firstWhere((c) => c.id == cardId).todos.remove(todo);
+    final card = _cards.firstWhere((c) => c.id == cardId);
+    card.todos.remove(todo);
     notifyListeners();
-    if (todo.id != null) await Helper.deleteTodo(todo.id!);
+
+    if (todo.id != null) {
+      await Helper.deleteTodo(todo.id!);
+    }
   }
 }
