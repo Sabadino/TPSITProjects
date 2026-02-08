@@ -1,16 +1,46 @@
-# zkeep_project
+# ZKEEP
+Sviluppatore: [Hadi Hammoud]  
+Classe: 5IE
 
-A new Flutter project.
+## Descrizione
+Questo progetto è una versione semplice di Google Keep fatta in Flutter.  
+L’idea è avere più note (card) e dentro ogni nota una lista di promemoria (todo) da spuntare.
 
-## Getting Started
+Ho usato SQLite per salvare i dati in locale, così quando riapro l’app le note restano.
 
-This project is a starting point for a Flutter application.
+## Cosa fa l’app
+- aggiunge una nuova nota con il bottone `+`
+- mostra le note in una griglia
+- dentro ogni nota puoi:
+  - aggiungere un promemoria
+  - modificare il testo
+  - spuntare / togliere la spunta
+  - eliminare un promemoria
+  - eliminare tutta la nota
 
-A few resources to get you started if this is your first Flutter project:
+## Struttura file
+- `lib/main.dart` → avvio app e schermata principale
+- `lib/model.dart` → classi `Todo` e `TodoCard`
+- `lib/notifier.dart` → logica dell’app (aggiungi, elimina, update)
+- `lib/helper.dart` → gestione database SQLite
+- `lib/widgets.dart` → widget grafici delle card e dei todo
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Scelte fatte
+Ho cercato di tenerlo lineare e leggibile, senza roba complicata:
+- `Provider` + `ChangeNotifier` per gestire lo stato
+- `Helper` separato per le query al database
+- UI semplice in stile consegna, senza funzionalità extra inutili
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Database
+Tabelle usate:
+- `cards` → contiene le note
+- `todos` → contiene i promemoria collegati alla card (`card_id`)
+
+## Dipendenze
+- `provider`
+- `sqflite`
+- `path`
+
+## Nota
+L’app con `sqflite` va provata su Android/iOS/emulatore.  
+Su Chrome SQLite non funziona direttamente.
