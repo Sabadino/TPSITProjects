@@ -1,74 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'helper.dart';
+
 import 'model.dart';
 import 'notifier.dart';
 import 'widgets.dart';
- //FORZA INTERRRRR 
 
-  //FORZA INTERRRRR 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Helper.init();
-  final initialCards = await Helper.getCardsWithTodos();
-  runApp(MyApp(initialCards: initialCards));
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.initialCards});
-  final List<TodoCard> initialCards;
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ZKEEP',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: ChangeNotifierProvider(
-        create: (_) => TodoListNotifier(initialCards),
+      home: ChangeNotifierProvider<TodoListNotifier>(
+        create: (context) => TodoListNotifier()..loadFromDb(),
         child: const MyHomePage(title: 'ZKEEP'),
       ),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  @override
   Widget build(BuildContext context) {
-    final n = context.watch<TodoListNotifier>();
+    final TodoListNotifier notifier = context.watch<TodoListNotifier>();
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.amber[700],
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+        title: Text(
+          widget.title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
+        ),
         elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: n.length == 0
-            ? const Center(child: Text('Nessuna nota'))
-            : GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.75,
-                ),
-                itemCount: n.length,
-                itemBuilder: (_, i) => TodoCardWidget(card: n.getCard(i)),
-              ),
+        padding: const EdgeInsets.all(12.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12.0,
+            mainAxisSpacing: 12.0,
+            childAspectRatio: 0.75,
+          ),
+          itemCount: notifier.length,
+          itemBuilder: (context, index) {
+            TodoCard card = notifier.getCard(index);
+            return TodoCardWidget(card: card);
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: n.addCard,
-        backgroundColor: Colors.amber[700],
+        onPressed: () {
+          notifier.addCard();
+        },
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        tooltip: 'Aggiungi nota',
+        elevation: 4,
         child: const Icon(Icons.add, size: 28),
       ),
     );

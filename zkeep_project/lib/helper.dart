@@ -1,69 +1,84 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
 import 'model.dart';
- //FORZA INTERRRRR 
-class Helper {
-  static const _dbName = 'zkeep.db';
-  static const _dbVersion = 1;
 
-  static Future<Database> _open() async {
-    final path = join(await getDatabasesPath(), _dbName);
-    return openDatabase(
-      path,
-      version: _dbVersion,
-      onConfigure: (db) async => db.execute('PRAGMA foreign_keys = ON'),
-      onCreate: (db, version) async {
-        await db.execute('CREATE TABLE cards (id INTEGER PRIMARY KEY AUTOINCREMENT);');
-        await db.execute('''
-          CREATE TABLE todos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            card_id INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            checked INTEGER NOT NULL,
-            FOREIGN KEY(card_id) REFERENCES cards(id) ON DELETE CASCADE
-          );
-        ''');
-      },
+class DatabaseHelper {
+  static Future<Database> init() async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    return await openDatabase(path, version: 1, onCreate: _createTable);
+  }
+
+  static Future<void> _createTable(Database db, int version) async {
+    await db.execute('''
+    CREATE TABLE notes (
+      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
     );
+    ''');
+    await db.execute('''
+    CREATE TABLE todos (
+      id      INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      note_id INTEGER NOT NULL,
+      name    TEXT    NOT NULL,
+      checked INTEGER NOT NULL
+    );
+    ''');
   }
 
-  static Future<void> init() async => _open();
-
-  static Future<List<TodoCard>> getCardsWithTodos() async {
-    final db = await _open();
-    final cards = <TodoCard>[];
-    final cardRows = await db.query('cards');
-    for (final row in cardRows) {
-      final cardId = row['id'] as int;
-      final todoRows = await db.query('todos', where: 'card_id = ?', whereArgs: [cardId]);
-      final todos = todoRows.map(Todo.fromMap).toList();
-      cards.add(TodoCard(id: cardId, todos: todos));
+  static Future<List<TodoCard>> getNotes() async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    final List<Map<String, dynamic>> result = await db.query('notes');
+    if (result.isEmpty) {
+      return <TodoCard>[];
     }
-    return cards;
+    return result.map((row) => TodoCard.fromMap(row)).toList();
   }
 
-  static Future<int> insertCard() async {
-    final db = await _open();
-    return db.rawInsert('INSERT INTO cards DEFAULT VALUES');
+  static Future<int> insertNote() async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    return await db.insert('notes', {'id': null});
   }
 
-  static Future<void> deleteCard(int cardId) async {
-    final db = await _open();
-    await db.delete('cards', where: 'id = ?', whereArgs: [cardId]);
+  static Future<void> deleteNote(int id) async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    await db.delete('todos', where: 'note_id = ?', whereArgs: [id]);
+    await db.delete('notes', where: 'id = ?', whereArgs: [id]);
+  }
+
+  static Future<List<Todo>> getTodos() async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    final List<Map<String, dynamic>> result = await db.query('todos');
+    if (result.isEmpty) {
+      return <Todo>[];
+    }
+    return result.map((row) => Todo.fromMap(row)).toList();
   }
 
   static Future<int> insertTodo(Todo todo) async {
-    final db = await _open();
-    return db.insert('todos', todo.toMap());
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    return await db.insert('todos', todo.toMap());
   }
 
   static Future<void> updateTodo(Todo todo) async {
-    final db = await _open();
-    await db.update('todos', todo.toMap(), where: 'id = ?', whereArgs: [todo.id]);
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    db.update('todos', todo.toMap(), where: 'id = ?', whereArgs: [todo.id]);
   }
 
-  static Future<void> deleteTodo(int todoId) async {
-    final db = await _open();
-    await db.delete('todos', where: 'id = ?', whereArgs: [todoId]);
+  static Future<void> deleteTodo(Todo todo) async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    db.delete('todos', where: 'id = ?', whereArgs: [todo.id]);
+  }
+
+  Future<int> deleteAll() async {
+    String path = join(await getDatabasesPath(), 'zkeep.db');
+    Database db = await openDatabase(path, version: 1);
+    return await db.delete('todos');
   }
 }

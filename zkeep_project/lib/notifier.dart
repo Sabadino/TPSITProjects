@@ -1,57 +1,84 @@
 import 'package:flutter/widgets.dart';
+
 import 'helper.dart';
 import 'model.dart';
 
 class TodoListNotifier with ChangeNotifier {
-  TodoListNotifier(List<TodoCard> initialCards) : _cards = initialCards;
-
-  final List<TodoCard> _cards;
+  final _cards = <TodoCard>[];
 
   int get length => _cards.length;
-  TodoCard getCard(int index) => _cards[index];
+
+  Future<void> loadFromDb() async {
+    await DatabaseHelper.init();
+    List<TodoCard> notes = await DatabaseHelper.getNotes();
+    List<Todo> todos = await DatabaseHelper.getTodos();
+
+    for (TodoCard card in notes) {
+      for (Todo todo in todos) {
+        if (todo.noteId == card.id) {
+          card.todos.add(todo);
+        }
+      }
+    }
+
+    _cards.clear();
+    _cards.addAll(notes);
+    notifyListeners();
+  }
 
   Future<void> addCard() async {
-    final cardId = await Helper.insertCard();
-    _cards.add(TodoCard(id: cardId));
+    int newId = await DatabaseHelper.insertNote();
+    _cards.add(TodoCard(id: newId));
     notifyListeners();
   }
 
-  Future<void> deleteCard(int cardId) async {
-    _cards.removeWhere((c) => c.id == cardId);
-    notifyListeners();
-    await Helper.deleteCard(cardId);
-  }
+  Future<void> addTodo(String name, int cardID) async {
+    Todo todo = Todo(noteId: cardID, name: name, checked: false);
+    todo.id = await DatabaseHelper.insertTodo(todo);
 
-  Future<void> addTodo(String name, int cardId) async {
-    if (name.isEmpty) return;
-    final todo = Todo(cardId: cardId, name: name);
-    todo.id = await Helper.insertTodo(todo);
-
-    final card = _cards.firstWhere((c) => c.id == cardId);
-    card.todos.add(todo);
+    for (TodoCard card in _cards) {
+      if (card.id == cardID) {
+        card.todos.add(todo);
+        break;
+      }
+    }
     notifyListeners();
   }
 
   Future<void> changeTodo(Todo todo) async {
     todo.checked = !todo.checked;
+    await DatabaseHelper.updateTodo(todo);
     notifyListeners();
-    await Helper.updateTodo(todo);
   }
 
   Future<void> editTodo(Todo todo, String newName) async {
-    if (newName.isEmpty) return;
     todo.name = newName;
-    notifyListeners();
-    await Helper.updateTodo(todo);
+    await DatabaseHelper.updateTodo(todo);
   }
 
-  Future<void> deleteTodo(Todo todo, int cardId) async {
-    final card = _cards.firstWhere((c) => c.id == cardId);
-    card.todos.remove(todo);
-    notifyListeners();
-
-    if (todo.id != null) {
-      await Helper.deleteTodo(todo.id!);
+  Future<void> deleteTodo(Todo todo, int cardID) async {
+    await DatabaseHelper.deleteTodo(todo);
+    for (TodoCard card in _cards) {
+      if (card.id == cardID) {
+        card.todos.remove(todo);
+        break;
+      }
     }
+    notifyListeners();
   }
+
+  Future<void> deleteCard(int cardID) async {
+    await DatabaseHelper.deleteNote(cardID);
+    for (int i = 0; i < _cards.length; i++) {
+      if (_cards[i].id == cardID) {
+        _cards.removeAt(i);
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  TodoCard getCard(int index) => _cards[index];
+
+  List<TodoCard> get cards => _cards;
 }

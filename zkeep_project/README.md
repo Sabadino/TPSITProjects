@@ -2,11 +2,9 @@
 Sviluppatore: [Hadi Hammoud]   //FORZA INTERRRRR 
 Classe: 5IE
 
-## Descrizione
-Questo progetto è una versione semplice di Google Keep fatta in Flutter.  
-L’idea è avere più note (card) e dentro ogni nota una lista di promemoria (todo) da spuntare.
-
-Ho usato SQLite per salvare i dati in locale, così quando riapro l’app le note restano.
+## Descrizione 
+L'idea è avere più note (card) e dentro ogni nota una lista di promemoria (todo) da spuntare.
+Ho usato SQLite per salvare i dati in locale, così quando riapro l'app le note restano.
 
 ## Cosa fa l’app
 - aggiunge una nuova nota con il bottone `+`
@@ -26,15 +24,15 @@ Ho usato SQLite per salvare i dati in locale, così quando riapro l’app le not
 - `lib/widgets.dart` → widget grafici delle card e dei todo
 
 ## Scelte fatte
-Ho cercato di tenerlo lineare e leggibile, senza roba complicata:
-- `Provider` + `ChangeNotifier` per gestire lo stato
-- `Helper` separato per le query al database
-- UI semplice in stile consegna, senza funzionalità extra inutili
+  `Provider` + ChangeNotifier per gestire lo stato
+  `DatabaseHelper` separato per tutte le query al database
+  UI in stile consegna, senza funzionalità extra
 
 ## Database
-Tabelle usate:
-- `cards` → contiene le note
-- `todos` → contiene i promemoria collegati alla card (`card_id`)
+  Tabelle usate:
+
+  `notes` → contiene le note (card)
+  `todos` → contiene i promemoria collegati alla nota (note_id)
 
 ## Dipendenze
 - `provider`
