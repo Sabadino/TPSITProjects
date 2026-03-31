@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'model.dart';
 import 'notifier.dart';
 import 'widgets.dart';
 
@@ -14,74 +12,99 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ZKEEP',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: ChangeNotifierProvider<TodoListNotifier>(
-        create: (context) => TodoListNotifier()..loadFromDb(),
-        child: const MyHomePage(title: 'ZKEEP'),
+    return ChangeNotifierProvider(
+      create: (context) => TodoBoardNotifier()..loadData(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: const Color(0xFF5C6BC0),
+          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        ),
+        home: const TodoBoardPage(),
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class TodoBoardPage extends StatelessWidget {
+  const TodoBoardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final TodoListNotifier notifier = context.watch<TodoListNotifier>();
+    final cards = context.watch<TodoBoardNotifier>().cards;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        title: Text(
-          widget.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+        title: const Text(
+          'zKeep',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2),
         ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF5C6BC0),
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12.0,
-            mainAxisSpacing: 12.0,
-            childAspectRatio: 0.75,
-          ),
-          itemCount: notifier.length,
-          itemBuilder: (context, index) {
-            TodoCard card = notifier.getCard(index);
-            return TodoCardWidget(card: card);
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          notifier.addCard();
+      body: cards.isEmpty
+          ? const _EmptyState()
+          : Padding(
+              padding: const EdgeInsets.all(12),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 0.82,
+                ),
+                itemCount: cards.length,
+                itemBuilder: (context, index) =>
+                    TodoCardWidget(card: cards[index]),
+              ),
+            ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          final notifier = context.read<TodoBoardNotifier>();
+          final newCardId = await notifier.addCard();
+          final newCard = notifier.cards.firstWhere((c) => c.id == newCardId);
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => EditNoteScreen(card: newCard),
+              ),
+            );
+          }
         },
-        backgroundColor: Colors.blue,
+        icon: const Icon(Icons.add),
+        label: const Text('Nuova nota'),
+        backgroundColor: const Color(0xFF5C6BC0),
         foregroundColor: Colors.white,
-        tooltip: 'Aggiungi nota',
-        elevation: 4,
-        child: const Icon(Icons.add, size: 28),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.note_add_outlined, size: 64, color: Colors.grey.shade400),
+          const SizedBox(height: 16),
+          Text(
+            'Nessuna nota ancora',
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Premi + per creare la prima',
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+          ),
+        ],
       ),
     );
   }

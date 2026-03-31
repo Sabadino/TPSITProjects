@@ -1,118 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'model.dart';
 import 'notifier.dart';
 
-class TodoCardWidget extends StatefulWidget{
-  const TodoCardWidget({super.key, required this.card});
-
+// Card nella griglia principale
+class TodoCardWidget extends StatelessWidget {
   final TodoCard card;
-
-  @override
-  State<TodoCardWidget> createState() => _TodoCardWidgetState();
-}
-
-class _TodoCardWidgetState extends State<TodoCardWidget>{
-  final TextEditingController _todoController = TextEditingController();
-  bool _showNewTodoField = false;
-
-  @override
-  void dispose() {
-    _todoController.dispose();
-    super.dispose();
-  }
-
-  void _addTodo(TodoListNotifier notifier) {
-    if (_todoController.text.isNotEmpty) {
-      notifier.addTodo(_todoController.text, widget.card.id);
-      _todoController.clear();
-      setState(() {
-        _showNewTodoField = false;
-      });
-    }
-  }
+  const TodoCardWidget({super.key, required this.card});
 
   @override
   Widget build(BuildContext context) {
-    final TodoListNotifier notifier = context.watch<TodoListNotifier>();
-
-    return Card(
-      elevation: 3,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => EditNoteScreen(card: card)),
       ),
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.07),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(14),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...widget.card.todos.map((todo) {
-              return TodoItem(
-                todo: todo,
-                cardId: widget.card.id,
-              );
-            }),
-            if (_showNewTodoField)
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: false,
-                      onChanged: null,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: _todoController,
-                        decoration: const InputDecoration(
-                          hintText: 'Nuovo elemento...',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          border: InputBorder.none,
-                          isDense: true,
-                        ),
-                        autofocus: true,
-                        onSubmitted: (value) => _addTodo(notifier),
-                      ),
-                    ),
-                  ],
+            // Titolo
+            if (card.title.isNotEmpty) ...[
+              Text(
+                card.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.add_circle_outline,
-                      color: Colors.blue,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _showNewTodoField = true;
-                      });
-                    },
-                    tooltip: 'Aggiungi promemoria',
-                    iconSize: 22,
+              const SizedBox(height: 8),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+            ],
+            // Righe
+            ...card.lines.take(6).map((line) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Row(
+                    children: [
+                      Icon(
+                        line.checked
+                            ? Icons.check_circle_outline
+                            : Icons.radio_button_unchecked,
+                        size: 13,
+                        color: line.checked
+                            ? Colors.green.shade400
+                            : Colors.grey.shade400,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          line.text,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: line.checked
+                                ? Colors.grey.shade400
+                                : Colors.black87,
+                            decoration: line.checked
+                                ? TextDecoration.lineThrough
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      notifier.deleteCard(widget.card.id);
-                    },
-                    tooltip: 'Elimina nota',
-                    iconSize: 20,
-                  ),
-                ],
+                )),
+            // Se ci sono più di 6 righe mostra il contatore
+            if (card.lines.length > 6)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  '+ altri ${card.lines.length - 6}',
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -120,63 +96,114 @@ class _TodoCardWidgetState extends State<TodoCardWidget>{
   }
 }
 
-class TodoItem extends StatelessWidget {
-  TodoItem({required this.todo, required this.cardId}) : super(key: ObjectKey(todo));
-
-  final int cardId;
-  final Todo todo;
-
-  TextStyle? _getTextStyle(bool checked) {
-    if (!checked) return null;
-
-    return const TextStyle(
-      color: Colors.black45,
-      decoration: TextDecoration.lineThrough,
-    );
-  }
+// Schermata di modifica nota
+class EditNoteScreen extends StatelessWidget {
+  final TodoCard card;
+  const EditNoteScreen({super.key, required this.card});
 
   @override
   Widget build(BuildContext context) {
-    final TodoListNotifier notifier = context.watch<TodoListNotifier>();
-    final TextEditingController controller = TextEditingController(text: todo.name);
+    final notifier = context.watch<TodoBoardNotifier>();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
-      child: Row(
-        children: [
-          Checkbox(
-            value: todo.checked,
-            onChanged: (value) {
-              notifier.changeTodo(todo);
-            },
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            visualDensity: VisualDensity.compact,
-            activeColor: Colors.blue,
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              style: _getTextStyle(todo.checked),
-              onChanged: (value) {
-                notifier.editTodo(todo, value);
-              },
-            ),
-          ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF5C6BC0),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        actions: [
           IconButton(
-            icon: const Icon(Icons.close, size: 18, color: Colors.grey),
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Elimina nota',
             onPressed: () {
-              notifier.deleteTodo(todo, cardId);
+              notifier.deleteCard(card);
+              Navigator.pop(context);
             },
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            visualDensity: VisualDensity.compact,
           ),
         ],
       ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        children: [
+          // Titolo
+          TextFormField(
+            initialValue: card.title,
+            decoration: const InputDecoration(
+              hintText: 'Titolo',
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+            onChanged: (v) => notifier.updateTitle(card, v),
+          ),
+
+          const Divider(),
+          const SizedBox(height: 4),
+
+          // Righe
+          ...card.lines.map((line) => _LineItem(card: card, line: line)),
+
+          const SizedBox(height: 12),
+
+          // Aggiungi riga
+          TextButton.icon(
+            onPressed: () => notifier.addLine(card),
+            icon: const Icon(Icons.add, size: 18),
+            label: const Text('Aggiungi elemento'),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF5C6BC0),
+              alignment: Alignment.centerLeft,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LineItem extends StatelessWidget {
+  final TodoCard card;
+  final TodoLine line;
+  const _LineItem({required this.card, required this.line});
+
+  @override
+  Widget build(BuildContext context) {
+    final notifier = context.read<TodoBoardNotifier>();
+
+    return Row(
+      children: [
+        Checkbox(
+          value: line.checked,
+          onChanged: (_) => notifier.toggleLine(line),
+          activeColor: const Color(0xFF5C6BC0),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
+        ),
+        Expanded(
+          child: TextFormField(
+            initialValue: line.text,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+            ),
+            style: TextStyle(
+              decoration: line.checked ? TextDecoration.lineThrough : null,
+              color: line.checked ? Colors.grey : Colors.black87,
+            ),
+            onChanged: (v) => notifier.updateLine(line, v),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close, size: 16),
+          color: Colors.grey.shade400,
+          onPressed: () => notifier.deleteLine(card, line),
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+        ),
+      ],
     );
   }
 }
