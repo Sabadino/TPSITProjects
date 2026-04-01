@@ -1,25 +1,38 @@
-class TodoLine {
+class Todo {
+  Todo({this.id, required this.noteId, required this.name, required this.checked});
   int? id;
-  int? cardId;
-  String text;
+  final int noteId;
+  String name;
   bool checked;
 
-  TodoLine({this.id, this.cardId, required this.text, this.checked = false});
-
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'card_id': cardId,
-      'text': text,
+    Map<String, dynamic> map = {
+      'note_id': noteId,
+      'name': name,
       'checked': checked ? 1 : 0,
     };
+    if (id != null) {
+      map['id'] = id;
+    }
+    return map;
+  }
+
+  static Todo fromMap(Map<String, dynamic> map) {
+    return Todo(
+      id: map['id'],
+      noteId: map['note_id'],
+      name: map['name'],
+      checked: map['checked'] == 1,
+    );
   }
 }
 
 class TodoCard {
-  int? id;
-  String title;
-  List<TodoLine> lines;
+  TodoCard({required this.id});
+  final int id;
+  List<Todo> todos = [];
 
-  TodoCard({this.id, this.title = "", required this.lines});
+  static TodoCard fromMap(Map<String, dynamic> map) {
+    return TodoCard(id: map['id']);
+  }
 }
