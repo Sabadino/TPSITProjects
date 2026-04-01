@@ -31,7 +31,6 @@ class TodoCardWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Titolo
             if (card.title.isNotEmpty) ...[
               Text(
                 card.title,
@@ -46,7 +45,6 @@ class TodoCardWidget extends StatelessWidget {
               const Divider(height: 1),
               const SizedBox(height: 8),
             ],
-            // Righe
             ...card.lines.take(6).map((line) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Row(
@@ -57,7 +55,7 @@ class TodoCardWidget extends StatelessWidget {
                             : Icons.radio_button_unchecked,
                         size: 13,
                         color: line.checked
-                            ? Colors.green.shade400
+                            ? const Color(0xFFF57C00)
                             : Colors.grey.shade400,
                       ),
                       const SizedBox(width: 6),
@@ -80,7 +78,6 @@ class TodoCardWidget extends StatelessWidget {
                     ],
                   ),
                 )),
-            // Se ci sono più di 6 righe mostra il contatore
             if (card.lines.length > 6)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -106,9 +103,9 @@ class EditNoteScreen extends StatelessWidget {
     final notifier = context.watch<TodoBoardNotifier>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFE8EAF6),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF5C6BC0),
+        backgroundColor: const Color(0xFFF57C00),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -125,7 +122,6 @@ class EditNoteScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         children: [
-          // Titolo
           TextFormField(
             initialValue: card.title,
             decoration: const InputDecoration(
@@ -139,22 +135,16 @@ class EditNoteScreen extends StatelessWidget {
             ),
             onChanged: (v) => notifier.updateTitle(card, v),
           ),
-
           const Divider(),
           const SizedBox(height: 4),
-
-          // Righe
           ...card.lines.map((line) => _LineItem(card: card, line: line)),
-
           const SizedBox(height: 12),
-
-          // Aggiungi riga
           TextButton.icon(
             onPressed: () => notifier.addLine(card),
             icon: const Icon(Icons.add, size: 18),
             label: const Text('Aggiungi elemento'),
             style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFF5C6BC0),
+              foregroundColor: const Color(0xFFF57C00),
               alignment: Alignment.centerLeft,
             ),
           ),
@@ -178,7 +168,7 @@ class _LineItem extends StatelessWidget {
         Checkbox(
           value: line.checked,
           onChanged: (_) => notifier.toggleLine(line),
-          activeColor: const Color(0xFF5C6BC0),
+          activeColor: const Color(0xFFF57C00),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: VisualDensity.compact,
         ),
