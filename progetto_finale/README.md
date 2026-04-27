@@ -1,16 +1,22 @@
-# progetto_finale
+# Il Mondo dell'Auto
+**Sviluppatore:** Hadi Hammoud  
+**Classe:** 5IE
 
-A new Flutter project.
+## Descrizione
+L'idea è creare un'app per il concessionario di famiglia Europe Car SNC 
+di Mestre (VE). Il cliente può sfogliare le auto in vendita, vedere i 
+dettagli e contattare il concessionario direttamente da app. 
+Chi gestisce il catalogo può aggiungere, modificare ed eliminare veicoli.
+Ho usato SQLite come cache locale, così se non c'è connessione le auto 
+già caricate restano visibili.
 
-## Getting Started
+## Diario di progetto
 
-This project is a starting point for a Flutter application.
+### Step 1 — init
+Creazione del progetto Flutter. Setup di json-server con db.json
+contenente le tabelle veicoli e marche con 5 auto reali.
+Configurazione del README con struttura del progetto.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Note
+L'app con sqflite va provata su Android o emulatore Android.
+Su Chrome SQLite non funziona.
