@@ -1,0 +1,86 @@
+{
+  "veicoli": [
+    {
+      "id": 1,
+      "marca": "Volkswagen",
+      "modello": "Polo 1.6 TDI",
+      "anno": 2019,
+      "prezzo": 12500,
+      "km": 67000,
+      "alimentazione": "Diesel",
+      "colore": "Bianco",
+      "cambio": "Manuale",
+      "cv": 95,
+      "disponibile": true,
+      "fotoUrl": "",
+      "urlSubito": ""
+    },
+    {
+      "id": 2,
+      "marca": "Audi",
+      "modello": "A3 Sportback 2.0 TDI",
+      "anno": 2020,
+      "prezzo": 24900,
+      "km": 41000,
+      "alimentazione": "Diesel",
+      "colore": "Nero",
+      "cambio": "Automatico",
+      "cv": 150,
+      "disponibile": true,
+      "fotoUrl": "",
+      "urlSubito": ""
+    },
+    {
+      "id": 3,
+      "marca": "Audi",
+      "modello": "RS6 Avant 4.0 TFSI",
+      "anno": 2021,
+      "prezzo": 89000,
+      "km": 28000,
+      "alimentazione": "Benzina",
+      "colore": "Grigio Nardo",
+      "cambio": "Automatico",
+      "cv": 600,
+      "disponibile": true,
+      "fotoUrl": "",
+      "urlSubito": ""
+    },
+    {
+      "id": 4,
+      "marca": "Audi",
+      "modello": "TT Coupe 2.0 TFSI",
+      "anno": 2018,
+      "prezzo": 31500,
+      "km": 54000,
+      "alimentazione": "Benzina",
+      "colore": "Rosso",
+      "cambio": "Automatico",
+      "cv": 230,
+      "disponibile": false,
+      "fotoUrl": "",
+      "urlSubito": ""
+    },
+    {
+      "id": 5,
+      "marca": "Mercedes",
+      "modello": "CLA 200 d Automatic",
+      "anno": 2022,
+      "prezzo": 34900,
+      "km": 19000,
+      "alimentazione": "Diesel",
+      "colore": "Bianco Polare",
+      "cambio": "Automatico",
+      "cv": 150,
+      "disponibile": true,
+      "fotoUrl": "",
+      "urlSubito": ""
+    }
+  ],
+  "marche": [
+    { "id": 1, "nome": "Volkswagen", "nazione": "Germania" },
+    { "id": 2, "nome": "Audi", "nazione": "Germania" },
+    { "id": 3, "nome": "Mercedes", "nazione": "Germania" },
+    { "id": 4, "nome": "Fiat", "nazione": "Italia" },
+    { "id": 5, "nome": "Alfa Romeo", "nazione": "Italia" }
+  ]
+}
