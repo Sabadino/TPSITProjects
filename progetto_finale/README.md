@@ -30,3 +30,9 @@ il database SQLite locale. Uso il singleton per non riaprire
 il database ogni volta, e ConflictAlgorithm.replace per
 sovrascrivere i dati vecchi quando arrivano quelli nuovi dal server.
 Ho creato due tabelle: veicoli e marche.
+
+### Step 4 — api_service e service
+Ho creato api_service.dart per gestire le chiamate HTTP al server
+con GET, POST, PUT, PATCH e DELETE. Ho aggiunto service.dart come
+strato intermedio che decide se prendere i dati dal server o dalla
+cache SQLite quando si è offline.
