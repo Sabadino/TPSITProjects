@@ -17,6 +17,3 @@ Creazione del progetto Flutter. Setup di json-server con db.json
 contenente le tabelle veicoli e marche con 5 auto reali.
 Configurazione del README con struttura del progetto.
 
-## Note
-L'app con sqflite va provata su Android o emulatore Android.
-Su Chrome SQLite non funziona.
