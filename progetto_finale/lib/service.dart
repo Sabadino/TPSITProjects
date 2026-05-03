@@ -96,7 +96,7 @@ class Service {
 
   Future<void> deleteMarca(Marca marca) async {
     try {
-      await _api.deleteMarca(marca.id);
+      await _api.deleteMarca(marca.id.toString());
     } catch (e) {
       // server non raggiungibile
     } finally {

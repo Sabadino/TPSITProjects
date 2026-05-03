@@ -129,6 +129,17 @@ class VeicoloCard extends StatelessWidget {
                       height: 160,
                       width: double.infinity,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          height: 160,
+                          color: Colors.grey[200],
+                          child: const Icon(
+                            Icons.directions_car,
+                            size: 60,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
                     )
                   : Container(
                       height: 160,
@@ -209,6 +220,17 @@ class DettaglioScreen extends StatelessWidget {
                     height: 220,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 220,
+                        color: Colors.grey[200],
+                        child: const Icon(
+                          Icons.directions_car,
+                          size: 80,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
                   )
                 : Container(
                     height: 220,
@@ -228,12 +250,9 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Anno',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text('${veicolo.anno}',
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const Divider(),
@@ -241,12 +260,9 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Chilometri',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text('${veicolo.km} km',
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const Divider(),
@@ -254,12 +270,9 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Alimentazione',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text(veicolo.alimentazione,
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const Divider(),
@@ -267,12 +280,9 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Cambio',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text(veicolo.cambio,
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const Divider(),
@@ -280,12 +290,9 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Colore',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text(veicolo.colore,
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const Divider(),
@@ -293,12 +300,9 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('CV',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text('${veicolo.cv} CV',
-                          style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500)),
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const Divider(),
@@ -306,8 +310,7 @@ class DettaglioScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Prezzo',
-                          style: TextStyle(
-                              color: Colors.black54, fontSize: 13)),
+                          style: TextStyle(color: Colors.black54, fontSize: 13)),
                       Text(
                         '€ ${veicolo.prezzo.toStringAsFixed(0)}',
                         style: const TextStyle(
@@ -407,7 +410,6 @@ class _FormScreenState extends State<FormScreen> {
   final _colore = TextEditingController();
   final _cambio = TextEditingController();
   final _fotoUrl = TextEditingController();
-  final _urlSubito = TextEditingController();
   bool _disponibile = true;
 
   @override
@@ -425,7 +427,6 @@ class _FormScreenState extends State<FormScreen> {
       _colore.text = v.colore;
       _cambio.text = v.cambio;
       _fotoUrl.text = v.fotoUrl;
-      _urlSubito.text = v.urlSubito;
       _disponibile = v.disponibile;
     }
   }
@@ -434,8 +435,7 @@ class _FormScreenState extends State<FormScreen> {
   void dispose() {
     for (var c in [
       _marca, _modello, _anno, _prezzo, _km,
-      _cv, _alimentazione, _colore, _cambio,
-      _fotoUrl, _urlSubito
+      _cv, _alimentazione, _colore, _cambio, _fotoUrl
     ]) {
       c.dispose();
     }
@@ -443,30 +443,29 @@ class _FormScreenState extends State<FormScreen> {
   }
 
   void _salva() {
-    final notifier = context.read<VeicoloNotifier>();
-    final veicolo = Veicolo(
-      id: widget.veicolo?.id ?? DateTime.now().millisecondsSinceEpoch,
-      marca: _marca.text,
-      modello: _modello.text,
-      anno: int.tryParse(_anno.text) ?? 0,
-      prezzo: double.tryParse(_prezzo.text) ?? 0,
-      km: int.tryParse(_km.text) ?? 0,
-      cv: int.tryParse(_cv.text) ?? 0,
-      alimentazione: _alimentazione.text,
-      colore: _colore.text,
-      cambio: _cambio.text,
-      fotoUrl: _fotoUrl.text,
-      urlSubito: _urlSubito.text,
-      disponibile: _disponibile,
-    );
-    if (widget.veicolo == null) {
-      notifier.addVeicolo(veicolo);
-    } else {
-      notifier.updateVeicolo(veicolo);
-    }
-    Navigator.pop(context);
+  final notifier = context.read<VeicoloNotifier>();
+  final veicolo = Veicolo(
+    id: widget.veicolo?.id ?? '',
+    marca: _marca.text,
+    modello: _modello.text,
+    anno: int.tryParse(_anno.text) ?? 0,
+    prezzo: double.tryParse(_prezzo.text) ?? 0,
+    km: int.tryParse(_km.text) ?? 0,
+    cv: int.tryParse(_cv.text) ?? 0,
+    alimentazione: _alimentazione.text,
+    colore: _colore.text,
+    cambio: _cambio.text,
+    fotoUrl: _fotoUrl.text,
+    urlSubito: '',
+    disponibile: _disponibile,
+  );
+  if (widget.veicolo == null) {
+    notifier.addVeicolo(veicolo);
+  } else {
+    notifier.updateVeicolo(veicolo);
   }
-
+  Navigator.pop(context);
+}
   @override
   Widget build(BuildContext context) {
     final isModifica = widget.veicolo != null;
@@ -508,8 +507,6 @@ class _FormScreenState extends State<FormScreen> {
             CampoTesto(label: 'Cambio', controller: _cambio),
             const SizedBox(height: 10),
             CampoTesto(label: 'URL Foto', controller: _fotoUrl),
-            const SizedBox(height: 10),
-            CampoTesto(label: 'Link Subito.it', controller: _urlSubito),
             const SizedBox(height: 6),
             SwitchListTile(
               title: const Text('Disponibile alla vendita'),
@@ -590,40 +587,28 @@ class ContattiScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
                         Text('Telefono',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.black54)),
+                            style: TextStyle(fontSize: 12, color: Colors.black54)),
                         SizedBox(height: 2),
                         Text('+39 041 268 4847',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500)),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                         Divider(height: 20),
                         Text('WhatsApp',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.black54)),
+                            style: TextStyle(fontSize: 12, color: Colors.black54)),
                         SizedBox(height: 2),
                         Text('+39 328 644 7905',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500)),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                         Divider(height: 20),
                         Text('Email',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.black54)),
+                            style: TextStyle(fontSize: 12, color: Colors.black54)),
                         SizedBox(height: 2),
                         Text('info@europecarsnc.it',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500)),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                         Divider(height: 20),
                         Text('Indirizzo',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.black54)),
+                            style: TextStyle(fontSize: 12, color: Colors.black54)),
                         SizedBox(height: 2),
                         Text('Via Orlanda 45/G, Mestre (VE)',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500)),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                       ],
                     ),
                   ),

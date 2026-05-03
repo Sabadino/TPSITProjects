@@ -1,7 +1,7 @@
 {
   "veicoli": [
     {
-      "id": 1,
+      "id": "1",
       "marca": "Volkswagen",
       "modello": "Polo 1.6 TDI",
       "anno": 2019,
@@ -16,7 +16,7 @@
       "urlSubito": ""
     },
     {
-      "id": 2,
+      "id": "2",
       "marca": "Audi",
       "modello": "A3 Sportback 2.0 TDI",
       "anno": 2020,
@@ -31,7 +31,7 @@
       "urlSubito": ""
     },
     {
-      "id": 3,
+      "id": "3",
       "marca": "Audi",
       "modello": "RS6 Avant 4.0 TFSI",
       "anno": 2021,
@@ -46,7 +46,7 @@
       "urlSubito": ""
     },
     {
-      "id": 4,
+      "id": "4",
       "marca": "Audi",
       "modello": "TT Coupe 2.0 TFSI",
       "anno": 2018,
@@ -59,28 +59,34 @@
       "disponibile": false,
       "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/2019_Audi_TT_Coup%C3%A9_2.0_TFSI_quattro_S_line_Front.jpg/800px-2019_Audi_TT_Coup%C3%A9_2.0_TFSI_quattro_S_line_Front.jpg",
       "urlSubito": ""
-    },
-    {
-      "id": 5,
-      "marca": "Mercedes",
-      "modello": "CLA 200 d Automatic",
-      "anno": 2022,
-      "prezzo": 34900,
-      "km": 19000,
-      "alimentazione": "Diesel",
-      "colore": "Bianco Polare",
-      "cambio": "Automatico",
-      "cv": 150,
-      "disponibile": true,
-      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/2019_Mercedes-Benz_CLA_220_AMG_Line_Premium_Plus_2.0_Front.jpg/800px-2019_Mercedes-Benz_CLA_220_AMG_Line_Premium_Plus_2.0_Front.jpg",
-      "urlSubito": ""
     }
   ],
   "marche": [
-    { "id": 1, "nome": "Volkswagen", "nazione": "Germania" },
-    { "id": 2, "nome": "Audi", "nazione": "Germania" },
-    { "id": 3, "nome": "Mercedes", "nazione": "Germania" },
-    { "id": 4, "nome": "Fiat", "nazione": "Italia" },
-    { "id": 5, "nome": "Alfa Romeo", "nazione": "Italia" }
-  ]
+    {
+      "id": "1",
+      "nome": "Volkswagen",
+      "nazione": "Germania"
+    },
+    {
+      "id": "2",
+      "nome": "Audi",
+      "nazione": "Germania"
+    },
+    {
+      "id": "3",
+      "nome": "Mercedes",
+      "nazione": "Germania"
+    },
+    {
+      "id": "4",
+      "nome": "Fiat",
+      "nazione": "Italia"
+    },
+    {
+      "id": "5",
+      "nome": "Alfa Romeo",
+      "nazione": "Italia"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

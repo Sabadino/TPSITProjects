@@ -31,37 +31,33 @@ class ApiService {
   }
 
   Future<void> addVeicolo(Veicolo veicolo) async {
+    final map = veicolo.toMap();
+    map.remove('id');
     await http.post(
       Uri.parse('$baseUrl/veicoli'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(veicolo.toMap()),
+      body: jsonEncode(map),
     );
   }
 
   Future<void> updateVeicolo(Veicolo veicolo) async {
-    await http.put(
+    final response = await http.put(
       Uri.parse('$baseUrl/veicoli/${veicolo.id}'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(veicolo.toMap()),
     );
+    if (response.statusCode != 200) {
+      throw Exception('Errore modifica: ${response.statusCode}');
+    }
   }
 
-  Future<void> patchVeicolo(int id, Map<String, dynamic> data) async {
-    await http.patch(
-      Uri.parse('$baseUrl/veicoli/$id'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
-    );
-  }
-
-  Future<void> deleteVeicolo(int id) async {
+  Future<void> deleteVeicolo(String id) async {
     try {
       final response = await http.delete(
         Uri.parse('$baseUrl/veicoli/$id'),
-        headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Errore durante l\'eliminazione del veicolo');
+        throw Exception('Errore eliminazione: ${response.statusCode}');
       }
     } catch (e) {
       rethrow;
@@ -90,14 +86,13 @@ class ApiService {
     );
   }
 
-  Future<void> deleteMarca(int id) async {
+  Future<void> deleteMarca(String id) async {
     try {
       final response = await http.delete(
         Uri.parse('$baseUrl/marche/$id'),
-        headers: {'Content-Type': 'application/json'},
       );
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Errore durante l\'eliminazione della marca');
+        throw Exception('Errore eliminazione marca: ${response.statusCode}');
       }
     } catch (e) {
       rethrow;

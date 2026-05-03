@@ -55,7 +55,6 @@ già caricate restano visibili.
 
 ## Scelte progettuali
 
-## Scelte progettuali
 
 **json-server**
 Ho scelto json-server perché con un solo file db.json espone
@@ -107,6 +106,9 @@ La variabile isOffline in VeicoloNotifier tiene traccia della
 connessione e l'appbar mostra un'icona arancione. Il catalogo
 resta sempre consultabile anche senza connessione.
 
+Il pulsante Subito.it richiede una configurazione aggiuntiva nel 
+file AndroidManifest.xml per abilitare il traffico HTTP e i 
+permessi per aprire URL esterni.
 
 ## Diario di progetto
 

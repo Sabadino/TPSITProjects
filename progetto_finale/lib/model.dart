@@ -1,5 +1,3 @@
-
-
 class Veicolo {
   Veicolo({
     required this.id,
@@ -17,7 +15,7 @@ class Veicolo {
     this.urlSubito = '',
   });
 
-  final int id;
+  final String id;
   String marca;
   String modello;
   int anno;
@@ -43,7 +41,6 @@ class Veicolo {
       'colore': colore,
       'cambio': cambio,
       'cv': cv,
-      // bool -> INTEGER (SQLite non supporta bool)
       'disponibile': disponibile ? 1 : 0,
       'fotoUrl': fotoUrl,
       'urlSubito': urlSubito,
@@ -52,7 +49,7 @@ class Veicolo {
 
   factory Veicolo.fromMap(Map<String, dynamic> map) {
     return Veicolo(
-      id: int.tryParse(map['id'].toString()) ?? 0,
+      id: map['id'].toString(),
       marca: map['marca'],
       modello: map['modello'],
       anno: int.tryParse(map['anno'].toString()) ?? 0,

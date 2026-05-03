@@ -15,15 +15,20 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'mondoauto.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createTable,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        await db.execute('DROP TABLE IF EXISTS veicoli');
+        await db.execute('DROP TABLE IF EXISTS marche');
+        await _createTable(db, newVersion);
+      },
     );
   }
 
   static Future<void> _createTable(Database db, int version) async {
     await db.execute('''
       CREATE TABLE veicoli (
-        id INTEGER PRIMARY KEY,
+        id TEXT PRIMARY KEY,
         marca TEXT NOT NULL,
         modello TEXT NOT NULL,
         anno INTEGER NOT NULL,
@@ -47,7 +52,6 @@ class DatabaseHelper {
     ''');
   }
 
-  // veicoli
   static Future<List<Veicolo>> getVeicoli() async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.query('veicoli');
@@ -80,7 +84,6 @@ class DatabaseHelper {
     );
   }
 
-  // marche
   static Future<List<Marca>> getMarche() async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.query('marche');
