@@ -1,7 +1,7 @@
 {
   "veicoli": [
     {
-      "id": "1",
+      "id": 1,
       "marca": "Volkswagen",
       "modello": "Polo 1.6 TDI",
       "anno": 2019,
@@ -12,11 +12,11 @@
       "cambio": "Manuale",
       "cv": 95,
       "disponibile": true,
-      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/2019_Volkswagen_Polo_SE_1.0.jpg/800px-2019_Volkswagen_Polo_SE_1.0.jpg",
+      "fotoUrl": "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800",
       "urlSubito": ""
     },
     {
-      "id": "2",
+      "id": 2,
       "marca": "Audi",
       "modello": "A3 Sportback 2.0 TDI",
       "anno": 2020,
@@ -27,11 +27,11 @@
       "cambio": "Automatico",
       "cv": 150,
       "disponibile": true,
-      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/2020_Audi_A3_Sportback_35_TDI_S_line_2.0.jpg/800px-2020_Audi_A3_Sportback_35_TDI_S_line_2.0.jpg",
+      "fotoUrl": "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800",
       "urlSubito": ""
     },
     {
-      "id": "3",
+      "id": 3,
       "marca": "Audi",
       "modello": "RS6 Avant 4.0 TFSI",
       "anno": 2021,
@@ -42,11 +42,11 @@
       "cambio": "Automatico",
       "cv": 600,
       "disponibile": true,
-      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/2020_Audi_RS6_Avant_-_Nardo_Grey.jpg/800px-2020_Audi_RS6_Avant_-_Nardo_Grey.jpg",
+      "fotoUrl": "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800",
       "urlSubito": ""
     },
     {
-      "id": "4",
+      "id": 4,
       "marca": "Audi",
       "modello": "TT Coupe 2.0 TFSI",
       "anno": 2018,
@@ -57,36 +57,30 @@
       "cambio": "Automatico",
       "cv": 230,
       "disponibile": false,
-      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/2019_Audi_TT_Coup%C3%A9_2.0_TFSI_quattro_S_line_Front.jpg/800px-2019_Audi_TT_Coup%C3%A9_2.0_TFSI_quattro_S_line_Front.jpg",
+      "fotoUrl": "https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=800",
+      "urlSubito": ""
+    },
+    {
+      "id": 5,
+      "marca": "Mercedes",
+      "modello": "CLA 200 d Automatic",
+      "anno": 2022,
+      "prezzo": 34900,
+      "km": 19000,
+      "alimentazione": "Diesel",
+      "colore": "Bianco Polare",
+      "cambio": "Automatico",
+      "cv": 150,
+      "disponibile": true,
+      "fotoUrl": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800",
       "urlSubito": ""
     }
   ],
   "marche": [
-    {
-      "id": "1",
-      "nome": "Volkswagen",
-      "nazione": "Germania"
-    },
-    {
-      "id": "2",
-      "nome": "Audi",
-      "nazione": "Germania"
-    },
-    {
-      "id": "3",
-      "nome": "Mercedes",
-      "nazione": "Germania"
-    },
-    {
-      "id": "4",
-      "nome": "Fiat",
-      "nazione": "Italia"
-    },
-    {
-      "id": "5",
-      "nome": "Alfa Romeo",
-      "nazione": "Italia"
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+    { "id": 1, "nome": "Volkswagen", "nazione": "Germania" },
+    { "id": 2, "nome": "Audi", "nazione": "Germania" },
+    { "id": 3, "nome": "Mercedes", "nazione": "Germania" },
+    { "id": 4, "nome": "Fiat", "nazione": "Italia" },
+    { "id": 5, "nome": "Alfa Romeo", "nazione": "Italia" }
+  ]
 }
