@@ -37,7 +37,7 @@ già caricate restano visibili.
 
 ### Tabella `veicoli` (json-server e SQLite)
 - `id` identificativo univoco del veicolo
-- `marca` marca del veicolo (es. Audi, Volkswagen)
+- `marca` marca del veicolo (es. Audi)
 - `modello` modello specifico (es. RS6 Avant)
 - `anno` anno di immatricolazione
 - `prezzo` prezzo di vendita in euro
@@ -46,7 +46,6 @@ già caricate restano visibili.
 - `colore` colore della carrozzeria
 - `cambio` tipo di cambio (Manuale, Automatico)
 - `cv` potenza del motore in cavalli
-- `disponibile` INTEGER 0 o 1, SQLite non supporta i boolean
 - `fotoUrl` URL dell'immagine del veicolo
 
 ### Tabella `marche` (json-server e SQLite)
@@ -56,64 +55,57 @@ già caricate restano visibili.
 
 ## Scelte progettuali
 
+## Scelte progettuali
+
 **json-server**
-Permette di simulare un backend REST completo senza scrivere una riga
-di codice server. Con un unico file db.json espone automaticamente
-tutti gli endpoint: GET, POST, PUT, PATCH e DELETE. Ho scelto
-json-server perché è semplice da avviare e mi ha permesso di
-concentrarmi sulla parte Flutter senza dovermi preoccupare del backend.
+Ho scelto json-server perché con un solo file db.json espone
+automaticamente tutti gli endpoint: GET, POST, PUT, PATCH e DELETE.
+Non dover scrivere codice backend mi ha permesso di concentrarmi
+interamente sulla parte Flutter.
 
 **sqflite per la cache**
-Leggero, ben documentato e usa query SQL familiari. Scelto rispetto a
-ObjectBox per la semplicità. La cache salva i dati ogni volta che
-vengono scaricati dal server, così se si perde la connessione il
-catalogo resta consultabile lo stesso.
+Usa query SQL che già conosco ed è ben documentato. Ho scartato
+ObjectBox perché aggiungeva complessità inutile. Ogni volta che
+scarico i dati dal server li salvo anche in locale, così se si
+perde la connessione l'app funziona lo stesso.
 
 **Provider con ChangeNotifier**
 Scelto per gestire lo stato dell'app in modo pulito. Ogni volta che i
 dati cambiano, notifyListeners() aggiorna automaticamente tutti i
 widget che lo ascoltano, senza dover chiamare setState in ogni
 schermata. È lo stesso pattern usato a lezione che ho adattato al
-mio progetto.
+mio progetto
 
 **Service come strato intermedio**
-Ho separato la logica in una classe Service che decide da dove
-prendere i dati, server o cache. Se il server risponde scarica
-tutto e aggiorna SQLite, altrimenti legge da SQLite. In questo modo
-ogni parte del codice ha un compito preciso e non si mischiano
-responsabilità diverse.
+Ho creato una classe Service in mezzo tra API e SQLite per non
+mischiare tutto insieme. Decide da dove prendere i dati: se il
+server risponde lo usa, altrimenti legge dalla cache. Ogni classe
+ha una responsabilità precisa.
 
 **toMap() e fromMap()**
-Ogni classe ha questi due metodi. toMap() converte l'oggetto in una
-mappa per salvarlo in SQLite o inviarlo al server. fromMap() fa il
-contrario e ricostruisce l'oggetto dai dati ricevuti. Stesso pattern
-del codice visto a lezione, l'ho trovato molto comodo da usare.
+Convertono gli oggetti Dart in mappe e viceversa. Servono sia per
+salvare in SQLite che per comunicare col server. Li ho visti nel
+codice del prof e li ho adattati alle mie classi.
 
 **ConflictAlgorithm.replace**
-Usato nell'inserimento in SQLite. Se trova due record con lo stesso
-id aggiorna quello vecchio con i nuovi dati. È fondamentale quando
-si sincronizzano i dati dal server alla cache, altrimenti si
-otterrebbero duplicati.
+Quando inserisco un record in SQLite con un id già esistente lo
+sovrascrive invece di dare errore. Utile quando sincronizzo dal
+server perché voglio sempre avere la versione più aggiornata.
 
 **CampoTesto widget riutilizzabile**
-Nel form ho creato un widget separato CampoTesto invece di ripetere
-la stessa struttura TextField per ogni campo. Se devo cambiare lo
-stile lo cambio in un posto solo. L'ho fatto dopo aver letto la
-documentazione Flutter sui widget riutilizzabili, ha senso non
-ripetersi.
+Nel form avevo undici campi TextField quasi identici. Ho creato
+un widget CampoTesto che prende label e controller come parametri
+così non ripeto lo stesso codice undici volte.
 
 **Long press per eliminare**
-Ho scelto il long press sulla card per eliminare un veicolo, stesso
-approccio usato nel codice visto a lezione. Mantiene l'interfaccia
-pulita senza aggiungere pulsanti extra che avrebbero appesantito
-la grafica.
+Preso dal codice del prof. Tenere premuto sulla card elimina il
+veicolo senza aggiungere pulsanti extra nell'interfaccia.
 
 **Logica offline**
-Se il server non risponde, Service legge dalla cache SQLite. La
-variabile isOffline in VeicoloNotifier tiene traccia dello stato
-della connessione e la UI lo mostra con un'icona arancione nell'appbar.
-Ho scelto di non bloccare le operazioni di lettura offline, il
-catalogo resta sempre consultabile.
+Quando il server non risponde, Service legge dalla cache SQLite.
+La variabile isOffline in VeicoloNotifier tiene traccia della
+connessione e l'appbar mostra un'icona arancione. Il catalogo
+resta sempre consultabile anche senza connessione.
 
 
 ## Diario di progetto
