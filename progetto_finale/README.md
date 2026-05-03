@@ -168,5 +168,5 @@ e magari le notifiche push quando arriva una nuova auto in catalogo.
 Spero sinceramente che mio padre inizierà ad usare l'app per
 gestire il suo concessionario.
 
-Forza Inter. ⚫🔵
+Forza Inter. ⚫🔵!
 
