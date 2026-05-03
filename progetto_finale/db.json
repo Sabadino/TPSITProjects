@@ -12,7 +12,7 @@
       "cambio": "Manuale",
       "cv": 95,
       "disponibile": true,
-      "fotoUrl": "",
+      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/2019_Volkswagen_Polo_SE_1.0.jpg/800px-2019_Volkswagen_Polo_SE_1.0.jpg",
       "urlSubito": ""
     },
     {
@@ -27,7 +27,7 @@
       "cambio": "Automatico",
       "cv": 150,
       "disponibile": true,
-      "fotoUrl": "",
+      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/2020_Audi_A3_Sportback_35_TDI_S_line_2.0.jpg/800px-2020_Audi_A3_Sportback_35_TDI_S_line_2.0.jpg",
       "urlSubito": ""
     },
     {
@@ -42,7 +42,7 @@
       "cambio": "Automatico",
       "cv": 600,
       "disponibile": true,
-      "fotoUrl": "",
+      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/2020_Audi_RS6_Avant_-_Nardo_Grey.jpg/800px-2020_Audi_RS6_Avant_-_Nardo_Grey.jpg",
       "urlSubito": ""
     },
     {
@@ -57,7 +57,7 @@
       "cambio": "Automatico",
       "cv": 230,
       "disponibile": false,
-      "fotoUrl": "",
+      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/2019_Audi_TT_Coup%C3%A9_2.0_TFSI_quattro_S_line_Front.jpg/800px-2019_Audi_TT_Coup%C3%A9_2.0_TFSI_quattro_S_line_Front.jpg",
       "urlSubito": ""
     },
     {
@@ -72,7 +72,7 @@
       "cambio": "Automatico",
       "cv": 150,
       "disponibile": true,
-      "fotoUrl": "",
+      "fotoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/2019_Mercedes-Benz_CLA_220_AMG_Line_Premium_Plus_2.0_Front.jpg/800px-2019_Mercedes-Benz_CLA_220_AMG_Line_Premium_Plus_2.0_Front.jpg",
       "urlSubito": ""
     }
   ],
