@@ -168,5 +168,13 @@ e magari le notifiche push quando arriva una nuova auto in catalogo.
 Spero sinceramente che mio padre inizierà ad usare l'app per
 gestire il suo concessionario.
 
+## Fonti
+- Flutter documentazione: https://flutter.dev/docs
+- sqflite package: https://pub.dev/packages/sqflite
+- provider package: https://pub.dev/packages/provider
+- json-server: https://github.com/typicode/json-server
+- url_launcher package: https://pub.dev/packages/url_launcher
+
+
 Forza Inter. ⚫🔵!
 
